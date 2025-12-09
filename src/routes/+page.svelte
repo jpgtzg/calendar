@@ -77,12 +77,11 @@
 	});
 </script>
 
-<div class="flex">
-	<div class="flex self-start shadow-md">
+<div class="flex gap-8">
+	<div class="flex self-start shadow-lg">
 		<Calendar type="single" bind:value={selectedDate} class="rounded-md border" />
 	</div>
-	<div class="w-8"></div>
-	<div class="flex-1 shadow-md">
+	<div class="flex-1 rounded-md shadow-md">
 		{#if calendarApp}
 			<ScheduleXCalendar {calendarApp} />
 		{/if}
