@@ -4,7 +4,7 @@
 	let { children } = $props();
 </script>
 
-<div class="p-4">
+<div class="p-8">
 	<div class="flex items-center justify-between shadow-md rounded-md p-4">
 		<h1 class="text-2xl font-bold">Calendar</h1>
 		<button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-2">
@@ -14,6 +14,6 @@
 			Add Event
 		</button>
 	</div>
-	<div class="h-4"></div>
+	<div class="h-8"></div>
 	{@render children()}
 </div>
