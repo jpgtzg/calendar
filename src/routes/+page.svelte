@@ -6,6 +6,7 @@
 	import { getLocalTimeZone, today, CalendarDate } from '@internationalized/date';
 	import { Calendar } from '$lib/components/ui/calendar/index.js';
 	import { createCalendarControlsPlugin } from '@schedule-x/calendar-controls';
+	import { createIcalendarPlugin } from '@schedule-x/ical';
 	import '@schedule-x/theme-default/dist/index.css';
 	import 'temporal-polyfill/global';
 
@@ -13,12 +14,29 @@
 
 	const calendarControls = createCalendarControlsPlugin();
 
-	let calendarApp = $state<ReturnType<typeof createCalendar<[typeof calendarControls]>> | null>(
-		null
-	);
+	let calendarApp = $state<ReturnType<typeof createCalendar> | null>(null);
 
-	onMount(() => {
+	onMount(async () => {
 		if (browser) {
+			// Fetch iCalendar data from server API route (bypasses CORS)
+			let icalendarData = '';
+			try {
+				const response = await fetch(`/api/ical`);
+				if (response.ok) {
+					const result = await response.json();
+					icalendarData = result.data || '';
+				} else {
+					console.error('Failed to fetch iCalendar:', response.statusText);
+				}
+			} catch (error) {
+				console.error('Failed to fetch iCalendar:', error);
+			}
+
+			// Only create iCalendar plugin if we have data
+			const plugins = icalendarData
+				? [calendarControls, createIcalendarPlugin({ data: icalendarData })]
+				: [calendarControls];
+
 			calendarApp = createCalendar(
 				{
 					dayBoundaries: {
@@ -41,7 +59,7 @@
 						}
 					]
 				},
-				[calendarControls]
+				plugins as any
 			);
 		}
 	});
@@ -63,7 +81,7 @@
 	<div class="flex self-start shadow-md">
 		<Calendar type="single" bind:value={selectedDate} class="rounded-md border" />
 	</div>
-	<div class="w-4"></div>
+	<div class="w-8"></div>
 	<div class="flex-1 shadow-md">
 		{#if calendarApp}
 			<ScheduleXCalendar {calendarApp} />
