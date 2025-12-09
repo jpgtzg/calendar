@@ -82,6 +82,8 @@
 			calendarControls.setDate(plainDate);
 		}
 	});
+
+	setInterval(() => location.reload(), 1000 * 60 * 15); // every 15 min
 </script>
 
 <div class="flex gap-8">
