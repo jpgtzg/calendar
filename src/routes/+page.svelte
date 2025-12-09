@@ -21,6 +21,10 @@
 		if (browser) {
 			calendarApp = createCalendar(
 				{
+					dayBoundaries: {
+						start: '06:00',
+						end: '24:00'
+					},
 					views: [createViewDay(), createViewWeek()],
 					events: [
 						{
@@ -56,11 +60,11 @@
 </script>
 
 <div class="flex">
-	<div class="flex self-start">
+	<div class="flex self-start shadow-md">
 		<Calendar type="single" bind:value={selectedDate} class="rounded-md border" />
 	</div>
 	<div class="w-4"></div>
-	<div class="flex-1">
+	<div class="flex-1 shadow-md">
 		{#if calendarApp}
 			<ScheduleXCalendar {calendarApp} />
 		{/if}
