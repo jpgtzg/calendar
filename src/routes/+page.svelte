@@ -14,17 +14,20 @@
 	const calendarControls = createCalendarControlsPlugin();
 	let calendarApp = $state<ReturnType<typeof createCalendar> | null>(null);
 	let icalendarPlugin = $state<ReturnType<typeof createIcalendarPlugin> | null>(null);
+
 	onMount(async () => {
 		if (browser) {
 			// Fetch iCalendar data from server API route (bypasses CORS)
 			let icalendarData = '';
 			try {
 				const response = await fetch(`/api/ical`);
+				const result = await response.json();
 				if (response.ok) {
-					const result = await response.json();
 					icalendarData = result.data || '';
+					console.log('Successfully fetched iCalendar data, length:', icalendarData.length);
 				} else {
-					console.error('Failed to fetch iCalendar:', response.statusText);
+					console.error('Failed to fetch iCalendar:', result.error || response.statusText);
+					console.error('Response status:', response.status);
 				}
 			} catch (error) {
 				console.error('Failed to fetch iCalendar:', error);
