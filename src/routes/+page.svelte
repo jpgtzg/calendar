@@ -11,11 +11,9 @@
 	import 'temporal-polyfill/global';
 
 	let selectedDate = $state(today(getLocalTimeZone()));
-
 	const calendarControls = createCalendarControlsPlugin();
-
 	let calendarApp = $state<ReturnType<typeof createCalendar> | null>(null);
-
+	let icalendarPlugin = $state<ReturnType<typeof createIcalendarPlugin> | null>(null);
 	onMount(async () => {
 		if (browser) {
 			// Fetch iCalendar data from server API route (bypasses CORS)
@@ -32,32 +30,38 @@
 				console.error('Failed to fetch iCalendar:', error);
 			}
 
-			// Only create iCalendar plugin if we have data
-			const plugins = icalendarData
-				? [calendarControls, createIcalendarPlugin({ data: icalendarData })]
-				: [calendarControls];
+			// Create iCalendar plugin if we have data
+			if (icalendarData) {
+				icalendarPlugin = createIcalendarPlugin({ data: icalendarData });
+			}
+
+			// Build plugins array
+			const plugins = icalendarPlugin ? [calendarControls, icalendarPlugin] : [calendarControls];
 
 			calendarApp = createCalendar(
 				{
+					timezone: 'America/Mexico_City',
 					dayBoundaries: {
 						start: '06:00',
 						end: '24:00'
 					},
+					firstDayOfWeek: 7,
 					views: [createViewDay(), createViewWeek()],
-					events: [
-						{
-							id: '1',
-							title: 'Event 1',
-							start: Temporal.PlainDate.from('2025-12-08'),
-							end: Temporal.PlainDate.from('2025-12-09')
-						},
-						{
-							id: '2',
-							title: 'Event 2',
-							start: Temporal.ZonedDateTime.from('2024-07-06T02:00:00+09:00[Asia/Tokyo]'),
-							end: Temporal.ZonedDateTime.from('2024-07-06T04:00:00+09:00[Asia/Tokyo]')
+					weekOptions: {
+						gridHeight: 900,
+						eventWidth: 100,
+						timeAxisFormatOptions: { hour: '2-digit', minute: '2-digit' },
+						eventOverlap: true,
+						gridStep: 60
+					},
+					callbacks: {
+						onRangeUpdate(range) {
+							console.log('rendering events for new range', range);
+							if (icalendarPlugin) {
+								icalendarPlugin.between(range.start, range.end);
+							}
 						}
-					]
+					}
 				},
 				plugins as any
 			);
