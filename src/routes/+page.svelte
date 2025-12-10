@@ -13,6 +13,17 @@
 		}
 	});
 
+	onMount(() => {
+		if (browser) {
+			// Set up auto-reload every 3 minutes
+			const interval = setInterval(() => location.reload(), 1000 * 60 * 3);
+
+			return () => {
+				clearInterval(interval);
+			};
+		}
+	});
+
 	// Handle image click/keypress to navigate to calendar
 	function handleImageClick() {
 		goto('/calendar');
@@ -24,8 +35,6 @@
 			handleImageClick();
 		}
 	}
-
-	setInterval(() => location.reload(), 1000 * 60 * 15); // every 15 min
 </script>
 
 <div class="flex justify-center items-center h-screen">
@@ -36,6 +45,6 @@
 		class="cursor-pointer border-none bg-transparent p-0"
 		aria-label="Click to view calendar"
 	>
-		<img src={unsplashPhoto} alt="Random from Unsplash" class="block" />
+		<img src={unsplashPhoto} alt="Written by @jpgtzg" class="block" />
 	</button>
 </div>

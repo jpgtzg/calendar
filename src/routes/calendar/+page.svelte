@@ -123,7 +123,16 @@
 		}
 	});
 
-	setInterval(() => location.reload(), 1000 * 60 * 15); // every 15 min
+	onMount(() => {
+		if (browser) {
+			// Set up auto-reload every 15 minutes
+			const interval = setInterval(() => location.reload(), 1000 * 60 * 15);
+
+			return () => {
+				clearInterval(interval);
+			};
+		}
+	});
 </script>
 
 <div class="flex gap-8">
