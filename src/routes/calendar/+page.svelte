@@ -55,7 +55,7 @@
 					firstDayOfWeek: 7,
 					views: [createViewDay(), createViewWeek()],
 					weekOptions: {
-						gridHeight: 900,
+						gridHeight: 700,
 						eventWidth: 100,
 						timeAxisFormatOptions: { hour: '2-digit', minute: '2-digit' },
 						eventOverlap: true,
