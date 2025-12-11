@@ -21,7 +21,7 @@ export const GET: RequestHandler = async () => {
         }
 
         // Build the image URL
-        const image = data.urls.raw + '&w=1900&h=1200&fit=crop&auto=format&q=80';
+        const image = data.urls.raw + '&w=1920&h=1200&fit=crop&auto=format&q=80';
         return json({ url: image });
     } catch (err) {
         // Catch network errors
