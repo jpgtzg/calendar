@@ -1,6 +1,6 @@
 # Personal Calendar Display
 
-A beautiful calendar application designed to run on an Orange Pi Zero 2W for personal use. Features a full-screen Unsplash image display that transitions to an interactive calendar view, with automatic inactivity timeout returning to the image view.
+A beautiful calendar application designed to run on an Orange Pi Zero 2W for personal use. Features a full-screen Unsplash image display that transitions to an interactive calendar view, with automatic inactivity timeout returning to the image view. 
 
 ## Features
 
