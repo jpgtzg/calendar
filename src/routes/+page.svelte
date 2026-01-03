@@ -4,9 +4,8 @@
 	import { goto } from '$app/navigation';
 
 	let unsplashPhoto = $state<string | null>(null);
-	let isBlackScreen = $state(false);
-	let inactivityTimer: ReturnType<typeof setTimeout> | null = null;
-	const INACTIVITY_TIMEOUT = 1000 * 60 * 10; // 10 minutes
+
+	let now = $state(new Date());
 
 	onMount(async () => {
 		if (browser) {
@@ -18,62 +17,21 @@
 
 	onMount(() => {
 		if (browser) {
+			// Update time every second
+			const timeInterval = setInterval(() => {
+				now = new Date();
+			}, 1000);
+
 			// Set up auto-reload every 3 minutes
-			const interval = setInterval(() => location.reload(), 1000 * 60 * 3);
+			const reloadInterval = setInterval(() => location.reload(), 1000 * 60 * 3);
 
 			return () => {
-				clearInterval(interval);
+				clearInterval(timeInterval);
+				clearInterval(reloadInterval);
 			};
 		}
 	});
-
-	// Reset inactivity timer
-	function resetInactivityTimer() {
-		if (inactivityTimer) {
-			clearTimeout(inactivityTimer);
-		}
-		inactivityTimer = setTimeout(() => {
-			isBlackScreen = true;
-		}, INACTIVITY_TIMEOUT);
-	}
-
-	// Wake up screen on user interaction
-	function wakeUpScreen() {
-		if (isBlackScreen) {
-			isBlackScreen = false;
-		}
-		resetInactivityTimer();
-	}
-
-	// Set up activity listeners
-	onMount(() => {
-		if (browser) {
-			const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
-			const handleActivity = () => {
-				wakeUpScreen();
-			};
-
-			events.forEach((event) => {
-				window.addEventListener(event, handleActivity);
-			});
-
-			// Start the timer
-			resetInactivityTimer();
-
-			return () => {
-				events.forEach((event) => {
-					window.removeEventListener(event, handleActivity);
-				});
-				if (inactivityTimer) {
-					clearTimeout(inactivityTimer);
-				}
-			};
-		}
-	});
-
-	// Handle image click/keypress to navigate to calendar
 	function handleImageClick() {
-		wakeUpScreen();
 		goto('/calendar');
 	}
 
@@ -90,24 +48,14 @@
 		type="button"
 		onclick={handleImageClick}
 		onkeydown={handleImageKeydown}
-		class="cursor-pointer border-none bg-transparent p-0"
+		class="cursor-pointer border-none bg-transparent p-0 relative"
 		aria-label="Click to view calendar"
 	>
 		<img src={unsplashPhoto} alt="Written by @jpgtzg" class="block" />
+		<p
+			class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-6xl font-semibold drop-shadow-lg tracking-wide"
+		>
+			{now.toLocaleTimeString()}
+		</p>
 	</button>
-	{#if isBlackScreen}
-		<div
-			class="absolute inset-0 bg-black z-50"
-			onclick={wakeUpScreen}
-			onkeydown={(e) => {
-				if (e.key === 'Enter' || e.key === ' ') {
-					e.preventDefault();
-					wakeUpScreen();
-				}
-			}}
-			role="button"
-			tabindex="0"
-			aria-label="Screen is black due to inactivity. Click or press Enter to wake up."
-		></div>
-	{/if}
 </div>
