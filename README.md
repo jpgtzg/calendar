@@ -72,7 +72,13 @@ Add the following environment variables:
 ```env
 UNSPLASH_ACCESS_KEY=your_unsplash_access_key_here
 ICALENDAR_URL=your_icalendar_url_here
+IMAGE_RELOAD_TIME_SECONDS=180
 ```
+
+**Environment Variable Descriptions:**
+- `UNSPLASH_ACCESS_KEY`: Your Unsplash API access key (required)
+- `ICALENDAR_URL`: URL to your iCalendar feed (required)
+- `IMAGE_RELOAD_TIME_SECONDS`: Time in seconds between image refreshes (optional, defaults to 180 seconds / 3 minutes)
 
 **Getting an Unsplash Access Key:**
 1. Go to [Unsplash Developers](https://unsplash.com/developers)
@@ -188,10 +194,18 @@ const INACTIVITY_TIMEOUT = 30000; // 30 seconds (in milliseconds)
 
 ### Changing the Image Refresh Interval
 
-Edit `src/routes/+page.svelte` and modify:
-```typescript
-const interval = setInterval(() => location.reload(), 1000 * 60 * 3); // 3 minutes
+The image refresh interval is now configurable via environment variable. Edit your `.env` file:
+
+```env
+IMAGE_RELOAD_TIME_SECONDS=180  # 3 minutes (in seconds)
 ```
+
+For example:
+- `IMAGE_RELOAD_TIME_SECONDS=60` - Refresh every 1 minute
+- `IMAGE_RELOAD_TIME_SECONDS=300` - Refresh every 5 minutes
+- `IMAGE_RELOAD_TIME_SECONDS=600` - Refresh every 10 minutes
+
+After changing the value, restart the application for the changes to take effect.
 
 ### Changing the Calendar Timezone
 
@@ -213,7 +227,8 @@ calendar/
 │   │   │   └── +page.svelte      # Calendar view
 │   │   └── api/
 │   │       ├── img/              # Unsplash image API
-│   │       └── ical/             # iCalendar fetch API
+│   │       ├── ical/             # iCalendar fetch API
+│   │       └── config/           # Configuration API (image reload time)
 │   └── lib/
 │       └── components/           # UI components
 ├── .env                          # Environment variables (create this)
