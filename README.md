@@ -17,6 +17,17 @@ A beautiful calendar application designed to run on an Orange Pi Zero 2W for per
 - Power supply (5V/2A recommended)
 - Optional: Display for dedicated calendar display
 
+## How It Works (Important)
+
+- The file `start.sh`:
+  - Fetches the latest changes from GitHub
+  - Installs dependencies if needed
+  - Builds the Svelte application
+  - Starts the preview server
+  - Launches Chromium in kiosk mode
+
+- `start.sh` is executed automatically by the desktop environment using **XDG autostart**.
+
 ## Installation
 
 ### 1. Prepare Your Orange Pi Zero 2W
@@ -89,179 +100,42 @@ IMAGE_RELOAD_TIME_SECONDS=180
 - Google Calendar: Settings → Calendar → Integrate calendar → Public URL to iCal format
 - Other calendar services: Check their documentation for iCal export URLs
 
-### 5. Build the Application
+### 5. Make the startup script executable
 
 ```bash
-# Build for production
-pnpm run build
+chmod +x start.sh
 ```
 
-### 6. Install Production Dependencies
+### 6. Enable desktop autostart (required)
 
-The build process creates a production-ready application. You may need to install a production adapter:
+Create the autostart file:
 
 ```bash
-# Install adapter for Node.js (if not already installed)
-pnpm add -D @sveltejs/adapter-node
+mkdir -p ~/.config/autostart
+nano ~/.config/autostart/kiosk.desktop
 ```
 
-Update `svelte.config.js` to use the Node adapter if needed.
-
-## Running the Application
-
-### Development Mode
-
-```bash
-pnpm run dev
-```
-
-The application will be available at `http://localhost:5173`
-
-### Production Mode
-
-```bash
-# Build first
-pnpm run build
-
-# Preview production build
-pnpm run preview
-```
-
-### Running as a System Service (Recommended)
-
-Create a systemd service file for automatic startup:
-
-```bash
-sudo nano /etc/systemd/system/calendar.service
-```
-
-Add the following content (adjust paths as needed):
+Paste:
 
 ```ini
-[Unit]
-Description=Personal Calendar Application
-After=network.target
-
-[Service]
-Type=simple
-User=your_username
-WorkingDirectory=/home/your_username/calendar
-Environment="NODE_ENV=production"
-EnvironmentFile=/home/your_username/calendar/.env
-ExecStart=/usr/bin/node node_modules/.bin/svelte-kit preview --host 0.0.0.0 --port 3000
-Restart=always
-RestartSec=10
-
-[Install]
-WantedBy=multi-user.target
+[Desktop Entry]
+Type=Application
+Exec=/home/orangepi/calendar/start.sh
+Hidden=false
+X-GNOME-Autostart-enabled=true
+Name=Kiosk Mode
 ```
 
-Enable and start the service:
+### 7. Running the Application
+
+- No manual commands are needed.
+- Reboot the system
+- Log into the desktop session
+- The calendar will start automatically in kiosk mode
 
 ```bash
-# Reload systemd
-sudo systemctl daemon-reload
-
-# Enable service to start on boot
-sudo systemctl enable calendar.service
-
-# Start the service
-sudo systemctl start calendar.service
-
-# Check status
-sudo systemctl status calendar.service
+sudo reboot
 ```
-
-### Accessing the Application
-
-Once running, access the calendar at:
-- Local network: `http://<orange-pi-ip-address>:3000`
-- Localhost: `http://localhost:3000`
-
-To find your Orange Pi's IP address:
-```bash
-hostname -I
-```
-
-## Configuration
-
-### Changing the Inactivity Timeout
-
-Edit `src/routes/calendar/+page.svelte` and modify:
-```typescript
-const INACTIVITY_TIMEOUT = 30000; // 30 seconds (in milliseconds)
-```
-
-### Changing the Image Refresh Interval
-
-The image refresh interval is now configurable via environment variable. Edit your `.env` file:
-
-```env
-IMAGE_RELOAD_TIME_SECONDS=180  # 3 minutes (in seconds)
-```
-
-For example:
-- `IMAGE_RELOAD_TIME_SECONDS=60` - Refresh every 1 minute
-- `IMAGE_RELOAD_TIME_SECONDS=300` - Refresh every 5 minutes
-- `IMAGE_RELOAD_TIME_SECONDS=600` - Refresh every 10 minutes
-
-After changing the value, restart the application for the changes to take effect.
-
-### Changing the Calendar Timezone
-
-Edit `src/routes/calendar/+page.svelte` and modify:
-```typescript
-timezone: 'America/Mexico_City', // Change to your timezone
-```
-
-## Development
-
-### Project Structure
-
-```
-calendar/
-├── src/
-│   ├── routes/
-│   │   ├── +page.svelte          # Main image display page
-│   │   ├── calendar/
-│   │   │   └── +page.svelte      # Calendar view
-│   │   └── api/
-│   │       ├── img/              # Unsplash image API
-│   │       ├── ical/             # iCalendar fetch API
-│   │       └── config/           # Configuration API (image reload time)
-│   └── lib/
-│       └── components/           # UI components
-├── .env                          # Environment variables (create this)
-└── package.json
-```
-
-### Available Scripts
-
-- `pnpm run dev` - Start development server
-- `pnpm run build` - Build for production
-- `pnpm run preview` - Preview production build
-- `pnpm run check` - Type check
-- `pnpm run lint` - Lint code
-
-## Troubleshooting
-
-### Service won't start
-- Check service logs: `sudo journalctl -u calendar.service -f`
-- Verify Node.js path: `which node`
-- Check file permissions on the project directory
-
-### Images not loading
-- Verify `UNSPLASH_ACCESS_KEY` is set correctly in `.env`
-- Check network connectivity: `ping api.unsplash.com`
-
-### Calendar events not showing
-- Verify `ICALENDAR_URL` is set correctly in `.env`
-- Test the URL directly: `curl $ICALENDAR_URL`
-- Check browser console for errors
-
-### Port already in use
-- Change the port in the systemd service file
-- Or find and kill the process: `sudo lsof -i :3000`
 
 ## License
 
