@@ -7,6 +7,7 @@
 
 	let now = $state(new Date());
 
+	// This part fetches the unsplash photo from the api
 	onMount(async () => {
 		if (browser) {
 			const response = await fetch(`/api/img`);
@@ -22,12 +23,21 @@
 				now = new Date();
 			}, 1000);
 
-			// Set up auto-reload every 3 minutes
-			const reloadInterval = setInterval(() => location.reload(), 1000 * 60 * 3);
+			let reloadInterval: ReturnType<typeof setInterval> | null = null;
+
+			// Fetch the image reload time from the server and set up reload interval
+			fetch(`/api/config`)
+				.then((configResponse) => configResponse.json())
+				.then((config) => {
+					const imageReloadTimeSeconds = config.imageReloadTimeSeconds;
+					reloadInterval = setInterval(() => location.reload(), 1000 * imageReloadTimeSeconds);
+				});
 
 			return () => {
 				clearInterval(timeInterval);
-				clearInterval(reloadInterval);
+				if (reloadInterval) {
+					clearInterval(reloadInterval);
+				}
 			};
 		}
 	});
