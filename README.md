@@ -1,6 +1,6 @@
 # Personal Calendar Display
 
-A beautiful calendar application designed to run on an Orange Pi Zero 2W for personal use. Features a full-screen Unsplash image display that transitions to an interactive calendar view, with automatic inactivity timeout returning to the image view. 
+A beautiful calendar application designed to run on an Orange Pi Zero 2W for personal use. Features a full-screen Unsplash image display that transitions to an interactive calendar view, with automatic inactivity timeout returning to the image view.
 
 ## Features
 
@@ -15,70 +15,52 @@ A beautiful calendar application designed to run on an Orange Pi Zero 2W for per
 - Orange Pi Zero 2W (or compatible ARM-based single-board computer)
 - MicroSD card (minimum 16GB recommended)
 - Power supply (5V/2A recommended)
-- Optional: Display for dedicated calendar display
-
-## How It Works (Important)
-
-- The file `start.sh`:
-  - Fetches the latest changes from GitHub
-  - Installs dependencies if needed
-  - Builds the Svelte application
-  - Starts the preview server
-  - Launches Chromium in kiosk mode
-
-- `start.sh` is executed automatically by the desktop environment using **XDG autostart**.
+- Display connected to the board
 
 ## Installation
 
-### 1. Prepare Your Orange Pi Zero 2W
+### One-liner (recommended)
 
-1. Flash Armbian or compatible Linux distribution to your microSD card
-2. Boot the Orange Pi and complete initial setup
-3. Update the system:
-   ```bash
-   sudo apt update && sudo apt upgrade -y
-   ```
-
-### 2. Install Node.js and pnpm
+On a fresh Orange Pi running Armbian or a Debian-based distro, just run:
 
 ```bash
-# Install Node.js (using NodeSource repository)
+curl -fsSL https://raw.githubusercontent.com/jpgtzg/calendar/main/install.sh | bash
+```
+
+The installer will:
+1. Install Node.js 20 and pnpm if needed
+2. Clone the repo into `~/calendar`
+3. Prompt you for your Unsplash key, iCalendar URL, and image reload time
+4. Build the app
+5. Set up XDG autostart so the calendar launches automatically on boot
+6. Offer to reboot when done
+
+You'll need:
+- An **Unsplash Access Key** — get one at [unsplash.com/developers](https://unsplash.com/developers)
+- An **iCalendar URL** — in Google Calendar: Settings → Calendar → Integrate calendar → Public URL to iCal format
+
+### Manual installation
+
+If you prefer to set things up yourself:
+
+```bash
+# 1. Install Node.js 20
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
-# Install pnpm
+# 2. Install pnpm
 curl -fsSL https://get.pnpm.io/install.sh | sh -
 source ~/.bashrc
 
-# Verify installations
-node --version
-pnpm --version
-```
+# 3. Clone the repo
+git clone https://github.com/jpgtzg/calendar.git ~/calendar
+cd ~/calendar
 
-### 3. Clone and Setup the Project
-
-```bash
-# Clone the repository 
-cd ~
-git clone https://github.com/jpgtzg/calendar.git calendar
-
-# Navigate to project directory
-cd calendar
-
-# Install dependencies
-pnpm install
-```
-
-### 4. Configure Environment Variables
-
-Create a `.env` file in the project root:
-
-```bash
-# Create .env file
+# 4. Create your .env file
 nano .env
 ```
 
-Add the following environment variables:
+Add to `.env`:
 
 ```env
 UNSPLASH_ACCESS_KEY=your_unsplash_access_key_here
@@ -86,36 +68,20 @@ ICALENDAR_URL=your_icalendar_url_here
 IMAGE_RELOAD_TIME_SECONDS=180
 ```
 
-**Environment Variable Descriptions:**
-- `UNSPLASH_ACCESS_KEY`: Your Unsplash API access key (required)
-- `ICALENDAR_URL`: URL to your iCalendar feed (required)
-- `IMAGE_RELOAD_TIME_SECONDS`: Time in seconds between image refreshes (optional, defaults to 180 seconds / 3 minutes)
-
-**Getting an Unsplash Access Key:**
-1. Go to [Unsplash Developers](https://unsplash.com/developers)
-2. Create a new application
-3. Copy your Access Key
-
-**Getting an iCalendar URL:**
-- Google Calendar: Settings → Calendar → Integrate calendar → Public URL to iCal format
-- Other calendar services: Check their documentation for iCal export URLs
-
-### 5. Make the startup script executable
-
 ```bash
+# 5. Install dependencies and build
+pnpm install
+pnpm build
+
+# 6. Make start.sh executable
 chmod +x start.sh
-```
 
-### 6. Enable desktop autostart (required)
-
-Create the autostart file:
-
-```bash
+# 7. Create the autostart entry
 mkdir -p ~/.config/autostart
 nano ~/.config/autostart/kiosk.desktop
 ```
 
-Paste:
+Paste the following (replace `orangepi` with your username if different):
 
 ```ini
 [Desktop Entry]
@@ -127,20 +93,65 @@ Name=Kiosk Mode
 Comment=Start Chromium in kiosk mode
 ```
 
-### 7. Running the Application
-
-- No manual commands are needed.
-- Reboot the system
-- Log into the desktop session
-- The calendar will start automatically in kiosk mode
-
 ```bash
+# 8. Reboot
 sudo reboot
 ```
 
+## How It Works
+
+`start.sh` runs on every boot via XDG autostart and:
+
+1. Fetches the latest changes from GitHub
+2. Rebuilds the app only if there are new commits
+3. Kills any leftover preview server or Chromium instances
+4. Starts the Vite preview server
+5. Launches Chromium in kiosk mode pointing at `localhost:4173`
+
+## Troubleshooting
+
+**Blank screen after boot**
+
+SSH into the Pi and check if everything is running:
+
+```bash
+pgrep -a chromium       # is Chromium running?
+ss -tlnp | grep 4173    # is the preview server up?
+```
+
+If nothing is running, trigger the script manually:
+
+```bash
+DISPLAY=:0 XAUTHORITY=/home/orangepi/.Xauthority ~/calendar/start.sh
+```
+
+**Port 4173 already in use**
+
+A previous instance is still running. Kill it and restart:
+
+```bash
+pkill -f "vite preview"
+DISPLAY=:0 ~/calendar/start.sh
+```
+
+**Git conflict on start.sh**
+
+Always edit `start.sh` on your dev machine and push — never edit it directly on the Pi. If a conflict occurs:
+
+```bash
+cd ~/calendar
+git stash
+git pull
+chmod +x start.sh
+```
+
+**GPU errors in logs**
+
+Lines like `GPU process exiting` or `swiftshader-webgl` are normal on Orange Pi — it falls back to software rendering automatically and the app works fine.
+
 ## License
 
-Personal use project - customize as needed.
+Personal use project — customize as needed.
 
 ## Contributors
 
