@@ -120,10 +120,11 @@ Paste:
 ```ini
 [Desktop Entry]
 Type=Application
-Exec=/home/orangepi/calendar/start.sh
+Exec=bash -c "DISPLAY=:0 XAUTHORITY=/home/orangepi/.Xauthority /home/orangepi/calendar/start.sh"
 Hidden=false
 X-GNOME-Autostart-enabled=true
 Name=Kiosk Mode
+Comment=Start Chromium in kiosk mode
 ```
 
 ### 7. Running the Application
