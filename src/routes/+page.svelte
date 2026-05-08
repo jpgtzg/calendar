@@ -4,10 +4,9 @@
 	import { goto } from '$app/navigation';
 
 	let unsplashPhoto = $state<string | null>(null);
-
 	let now = $state(new Date());
 
-	// This part fetches the unsplash photo from the api
+	// Fetch the unsplash photo from the api
 	onMount(async () => {
 		if (browser) {
 			const response = await fetch(`/api/img`);
@@ -30,7 +29,10 @@
 				.then((configResponse) => configResponse.json())
 				.then((config) => {
 					const imageReloadTimeSeconds = config.imageReloadTimeSeconds;
-					reloadInterval = setInterval(() => location.reload(), 1000 * imageReloadTimeSeconds);
+					reloadInterval = setInterval(
+						() => goto('/', { invalidateAll: true }),
+						1000 * imageReloadTimeSeconds
+					);
 				});
 
 			return () => {
@@ -41,6 +43,7 @@
 			};
 		}
 	});
+
 	function handleImageClick() {
 		goto('/calendar');
 	}

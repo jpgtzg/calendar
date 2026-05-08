@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { ScheduleXCalendar } from '@schedule-x/svelte';
 	import { createCalendar, createViewDay, createViewWeek } from '@schedule-x/calendar';
-	import { getLocalTimeZone, today, CalendarDate } from '@internationalized/date';
+	import { getLocalTimeZone, today } from '@internationalized/date';
 	import { Calendar } from '$lib/components/ui/calendar/index.js';
 	import { createCalendarControlsPlugin } from '@schedule-x/calendar-controls';
 	import { createIcalendarPlugin } from '@schedule-x/ical';
@@ -15,8 +15,8 @@
 	const calendarControls = createCalendarControlsPlugin();
 	let calendarApp = $state<ReturnType<typeof createCalendar> | null>(null);
 	let icalendarPlugin = $state<ReturnType<typeof createIcalendarPlugin> | null>(null);
-
 	let inactivityTimer: ReturnType<typeof setTimeout> | null = null;
+
 	const INACTIVITY_TIMEOUT = 30000; // 30 seconds of inactivity
 
 	onMount(async () => {
@@ -87,47 +87,40 @@
 		}
 	});
 
-	// Reset inactivity timer
-	function resetInactivityTimer() {
-		if (inactivityTimer) {
-			clearTimeout(inactivityTimer);
-		}
-		inactivityTimer = setTimeout(() => {
-			goto('/');
-		}, INACTIVITY_TIMEOUT);
-	}
-
-	// Set up activity listeners when calendar is shown
-	$effect(() => {
+	// Set up inactivity timer and activity listeners
+	onMount(() => {
 		if (browser) {
-			const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
-			const handleActivity = () => {
-				resetInactivityTimer();
-			};
+			let lastReset = 0;
 
-			events.forEach((event) => {
-				window.addEventListener(event, handleActivity);
-			});
+			function resetInactivityTimer() {
+				const now = Date.now();
+				if (now - lastReset < 1000) return; // throttle to once per second
+				lastReset = now;
+				if (inactivityTimer) clearTimeout(inactivityTimer);
+				inactivityTimer = setTimeout(() => {
+					goto('/');
+				}, INACTIVITY_TIMEOUT);
+			}
 
-			// Start the timer
+			// Removed 'mousemove' — fires hundreds of times per second and causes
+			// "too many History API calls" error in Chromium
+			const events = ['mousedown', 'keypress', 'scroll', 'touchstart', 'click'];
+			events.forEach((event) => window.addEventListener(event, resetInactivityTimer));
+
+			// Start the initial timer
 			resetInactivityTimer();
 
 			return () => {
-				events.forEach((event) => {
-					window.removeEventListener(event, handleActivity);
-				});
-				if (inactivityTimer) {
-					clearTimeout(inactivityTimer);
-				}
+				events.forEach((event) => window.removeEventListener(event, resetInactivityTimer));
+				if (inactivityTimer) clearTimeout(inactivityTimer);
 			};
 		}
 	});
 
 	onMount(() => {
 		if (browser) {
-			// Set up auto-reload every 15 minutes
+			// Auto-reload every 15 minutes to refresh calendar data
 			const interval = setInterval(() => location.reload(), 1000 * 60 * 15);
-
 			return () => {
 				clearInterval(interval);
 			};
