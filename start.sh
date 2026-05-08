@@ -1,7 +1,13 @@
 #!/bin/bash
+export DISPLAY=:0
+export XAUTHORITY=/home/orangepi/.Xauthority
 set -e
-
 cd ~/calendar
+
+# Kill any previous instances
+pkill -f "vite preview" 2>/dev/null || true
+pkill -f "chromium.*4173" 2>/dev/null || true
+sleep 1
 
 # Fetch latest changes without merging
 git fetch
@@ -21,7 +27,6 @@ else
     echo "Already up to date, skipping build."
 fi
 
-pkill -f "pnpm preview" || true
 pnpm preview --host --port 4173 &
 
 until curl -s http://localhost:4173 >/dev/null; do
