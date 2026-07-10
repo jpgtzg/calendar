@@ -130,11 +130,7 @@
 
 <div class="flex gap-8">
 	<div class="glass-panel flex self-start rounded-2xl shadow-lg">
-		<Calendar
-			type="single"
-			bind:value={selectedDate}
-			class="rounded-2xl border-0 bg-transparent"
-		/>
+		<Calendar type="single" bind:value={selectedDate} class="rounded-2xl border-0 bg-transparent" />
 	</div>
 	<div class="glass-panel sx-glass flex-1 overflow-hidden rounded-2xl shadow-lg">
 		{#if calendarApp}
@@ -183,7 +179,7 @@
 	   margin insets the events on both sides (padding wouldn't work here —
 	   the absolute positioning containing block includes the padding box). */
 	:global(.sx-glass .sx__time-grid-day) {
-		margin: 0 4px;
+		margin: 0 6px;
 	}
 
 	/* The default theme never sets a background on this popup — it floats
