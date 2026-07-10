@@ -178,6 +178,14 @@
 		background: transparent;
 	}
 
+	/* Events are positioned with absolute left/width percentages computed
+	   against their day column's box, so giving the day column itself a
+	   margin insets the events on both sides (padding wouldn't work here —
+	   the absolute positioning containing block includes the padding box). */
+	:global(.sx-glass .sx__time-grid-day) {
+		margin: 0 4px;
+	}
+
 	/* The default theme never sets a background on this popup — it floats
 	   over whatever is behind it, which was our blurred glass panel. */
 	:global(.sx-glass .sx__date-picker-popup) {
