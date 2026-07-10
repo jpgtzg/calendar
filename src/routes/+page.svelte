@@ -56,19 +56,43 @@
 	}
 </script>
 
-<div class="flex justify-center items-center h-screen relative">
+<div class="relative flex h-screen items-center justify-center overflow-hidden bg-black">
 	<button
 		type="button"
 		onclick={handleImageClick}
 		onkeydown={handleImageKeydown}
-		class="cursor-pointer border-none bg-transparent p-0 relative"
+		class="relative block h-full w-full cursor-pointer border-none bg-transparent p-0"
 		aria-label="Click to view calendar"
 	>
-		<img src={unsplashPhoto} alt="Written by @jpgtzg" class="block" />
-		<p
-			class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-6xl font-semibold drop-shadow-lg tracking-wide"
-		>
-			{now.toLocaleTimeString()}
-		</p>
+		{#if unsplashPhoto}
+			<img
+				src={unsplashPhoto}
+				alt="Written by @jpgtzg"
+				class="h-full w-full object-cover"
+			/>
+		{/if}
+
+		<div
+			class="absolute inset-0"
+			style="background-image: radial-gradient(at 15% 85%, oklch(0.62 0.22 291 / 45%) 0px, transparent 55%), radial-gradient(at 85% 15%, oklch(0.75 0.17 340 / 40%) 0px, transparent 55%), linear-gradient(to top, oklch(0.1 0.02 280 / 65%), transparent 45%);"
+		></div>
+
+		<div class="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6">
+			<div
+				class="glass-panel flex flex-col items-center gap-2 rounded-[2.5rem] px-16 py-10 text-white shadow-2xl"
+			>
+				<p class="text-7xl font-semibold tracking-tight drop-shadow-lg sm:text-8xl">
+					{now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+				</p>
+				<p class="text-lg font-medium text-white/80 sm:text-xl">
+					{now.toLocaleDateString([], {
+						weekday: 'long',
+						month: 'long',
+						day: 'numeric'
+					})}
+				</p>
+			</div>
+			<p class="text-sm font-medium tracking-wide text-white/60">Tap to open calendar</p>
+		</div>
 	</button>
 </div>

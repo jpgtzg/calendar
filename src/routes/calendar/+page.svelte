@@ -129,12 +129,67 @@
 </script>
 
 <div class="flex gap-8">
-	<div class="flex self-start shadow-lg">
-		<Calendar type="single" bind:value={selectedDate} class="rounded-md border" />
+	<div class="glass-panel flex self-start rounded-2xl shadow-lg">
+		<Calendar
+			type="single"
+			bind:value={selectedDate}
+			class="rounded-2xl border-0 bg-transparent"
+		/>
 	</div>
-	<div class="flex-1 rounded-md shadow-md">
+	<div class="glass-panel sx-glass flex-1 overflow-hidden rounded-2xl shadow-lg">
 		{#if calendarApp}
 			<ScheduleXCalendar {calendarApp} />
 		{/if}
 	</div>
 </div>
+
+<style>
+	:global(.sx-glass) {
+		--sx-color-background: transparent;
+		--sx-color-surface: var(--card);
+		--sx-color-surface-bright: var(--card);
+		--sx-color-surface-container: color-mix(in oklch, var(--primary) 6%, var(--card));
+		--sx-color-surface-container-high: color-mix(in oklch, var(--primary) 12%, var(--card));
+		--sx-color-surface-container-low: var(--card);
+		--sx-color-surface-dim: var(--muted);
+		--sx-color-on-background: var(--foreground);
+		--sx-color-on-surface: var(--foreground);
+		--sx-color-primary: var(--primary);
+		--sx-color-on-primary: var(--primary-foreground);
+		--sx-color-primary-container: color-mix(in oklch, var(--primary) 25%, var(--card));
+		--sx-color-on-primary-container: var(--foreground);
+		--sx-color-secondary: var(--secondary);
+		--sx-color-on-secondary: var(--secondary-foreground);
+		--sx-color-secondary-container: color-mix(in oklch, var(--secondary) 40%, var(--card));
+		--sx-color-on-secondary-container: var(--foreground);
+		--sx-color-tertiary: var(--accent);
+		--sx-color-on-tertiary: var(--accent-foreground);
+		--sx-color-tertiary-container: color-mix(in oklch, var(--accent) 30%, var(--card));
+		--sx-color-on-tertiary-container: var(--foreground);
+		--sx-color-outline: var(--border);
+		--sx-color-outline-variant: var(--border);
+		--sx-border: var(--border);
+		--sx-rounding-small: 0.5rem;
+		--sx-rounding-extra-small: 0.375rem;
+		--sx-rounding-extra-large: 1.25rem;
+	}
+
+	:global(.sx-glass .sx__calendar-wrapper) {
+		background: transparent;
+	}
+
+	/* The default theme never sets a background on this popup — it floats
+	   over whatever is behind it, which was our blurred glass panel. */
+	:global(.sx-glass .sx__date-picker-popup) {
+		background: var(--card);
+		border-radius: var(--radius-lg);
+	}
+
+	/* Same issue as the date-picker popup: it also relies on
+	   --sx-color-background, which we set to transparent above, so the
+	   Day/Week dropdown items would otherwise blend into the glass panel. */
+	:global(.sx-glass .sx__view-selection-items) {
+		background: var(--card);
+		border-radius: var(--radius-lg);
+	}
+</style>
