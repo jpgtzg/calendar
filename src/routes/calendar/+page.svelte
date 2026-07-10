@@ -174,6 +174,21 @@
 		background: transparent;
 	}
 
+	/* Overlapping events get narrowed and cascaded (weekOptions.eventOverlap),
+	   so a card can end up too narrow for its time/title text. The theme sets
+	   white-space: nowrap and clips the overflow, silently cutting text off
+	   instead of wrapping it — let it wrap onto a second line instead, since
+	   these cards are usually tall enough to have the vertical room. */
+	:global(.sx-glass .sx__time-grid-event-time),
+	:global(.sx-glass .sx__time-grid-event-title),
+	:global(.sx-glass .sx__time-grid-event-location) {
+		white-space: normal;
+		align-items: flex-start;
+	}
+	:global(.sx-glass .sx__event-icon) {
+		flex-shrink: 0;
+	}
+
 	/* Events are positioned with absolute left/width percentages computed
 	   against their day column's box, so giving the day column itself a
 	   margin insets the events on both sides (padding wouldn't work here —
