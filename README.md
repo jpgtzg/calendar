@@ -108,6 +108,32 @@ sudo reboot
 4. Starts the Vite preview server
 5. Launches Chromium in kiosk mode pointing at `localhost:4173`
 
+## Touch Panel Setup
+
+To enable a USB-C touch panel on the Orange Pi Zero 2W, the USB0 port needs to be switched into host mode:
+
+1. Get a terminal on the Orange Pi Zero 2W — either via SSH (`ssh orangepi@<ip-address>`) or by connecting a monitor and keyboard directly to it.
+2. Run:
+   ```bash
+   sudo orangepi-config
+   ```
+   You'll need sudo/root privileges for this. It opens a blue text-based configuration menu (similar to `raspi-config`).
+3. Use the arrow keys to highlight **System** and press Enter.
+4. Inside System, select **Hardware** (sometimes labeled "Hardware Configuration"). This is where USB and other peripheral modes live.
+5. Scroll down the hardware list with the arrow keys until you find the entry for USB0 mode — it will show options like `usb0-host`.
+6. Highlight `usb0-host`. Press the Spacebar to select/check it (an asterisk or `[*]` should appear next to it).
+7. Press Tab to move to the **Save** button and press Enter.
+8. Tab to **Back** and exit out of `orangepi-config` until you're back at the terminal.
+9. Run:
+   ```bash
+   sudo reboot
+   ```
+10. Once the board restarts, plug your touch panel's USB-C cable into USB0. You can check it's recognized by running:
+    ```bash
+    lsusb
+    ```
+    Your touch device should appear in the list.
+
 ## Troubleshooting
 
 **Blank screen after boot**
