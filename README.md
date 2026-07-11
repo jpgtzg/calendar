@@ -98,6 +98,29 @@ Comment=Start Chromium in kiosk mode
 sudo reboot
 ```
 
+## Uninstallation
+
+To remove the calendar app, autostart entry, pnpm, and Node.js:
+
+```bash
+cd ~/calendar
+./uninstall.sh
+```
+
+Or, if you no longer have the repo checked out:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/jpgtzg/calendar/main/uninstall.sh | bash
+```
+
+The uninstaller will:
+1. Stop any running `vite preview` / Chromium kiosk processes
+2. Remove the `~/.config/autostart/kiosk.desktop` entry
+3. Delete `~/calendar`
+4. Remove pnpm and its shell config entries
+5. Remove Node.js and the NodeSource repo
+6. Offer to reboot when done
+
 ## How It Works
 
 `start.sh` runs on every boot via XDG autostart and:

@@ -114,8 +114,8 @@ pnpm build
 print_ok "Build complete"
 
 # ─── Permissions ──────────────────────────────
-chmod +x "$INSTALL_DIR/start.sh"
-print_ok "start.sh is executable"
+chmod +x "$INSTALL_DIR/start.sh" "$INSTALL_DIR/uninstall.sh"
+print_ok "start.sh and uninstall.sh are executable"
 
 # ─── Autostart ────────────────────────────────
 print_step "Setting up autostart"
@@ -140,6 +140,8 @@ echo -e "${GREEN}${BOLD}  Installation complete! 🎉${RESET}"
 echo ""
 echo -e "  To start now:  ${CYAN}DISPLAY=:0 $INSTALL_DIR/start.sh${RESET}"
 echo -e "  Or just reboot and it will start automatically."
+echo ""
+echo -e "  To uninstall later: ${CYAN}$INSTALL_DIR/uninstall.sh${RESET}"
 echo ""
 
 read -r -p "Reboot now? [y/N] " REBOOT
