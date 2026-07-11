@@ -79,7 +79,7 @@
 
 		<div class="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6">
 			<div
-				class="glass-panel flex flex-col items-center gap-2 rounded-[2.5rem] px-16 py-10 text-white shadow-2xl"
+				class="flex flex-col items-center gap-2 rounded-[2.5rem] border border-white/20 bg-white/10 px-16 py-10 text-white shadow-2xl backdrop-blur-2xl"
 			>
 				<p class="text-7xl font-semibold tracking-tight drop-shadow-lg sm:text-8xl">
 					{now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
