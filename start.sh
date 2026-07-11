@@ -34,4 +34,4 @@ until curl -s http://localhost:4173 >/dev/null; do
     sleep 2
 done
 
-/usr/bin/chromium --noerrdialogs --disable-infobars --kiosk http://localhost:4173
+/usr/bin/chromium --noerrdialogs --disable-infobars --kiosk --incognito --disk-cache-dir=/dev/null http://localhost:4173
