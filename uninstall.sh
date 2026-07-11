@@ -27,7 +27,7 @@ echo "  ╚═══════════════════════
 echo -e "${RESET}"
 
 print_warn "This will remove the calendar app, autostart entry, Node.js, and pnpm."
-read -r -p "Are you sure? [y/N] " CONFIRM
+read -r -p "Are you sure? [y/N] " CONFIRM </dev/tty
 [[ "$CONFIRM" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 0; }
 
 # ─── Kill running instances ───────────────────
@@ -94,7 +94,7 @@ echo -e "  To reinstall, run:"
 echo -e "  ${CYAN}curl -fsSL https://raw.githubusercontent.com/jpgtzg/calendar/main/install.sh | bash${RESET}"
 echo ""
 
-read -r -p "Reboot now? [y/N] " REBOOT
+read -r -p "Reboot now? [y/N] " REBOOT </dev/tty
 if [[ "$REBOOT" =~ ^[Yy]$ ]]; then
     sudo reboot
 fi

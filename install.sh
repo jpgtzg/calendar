@@ -40,7 +40,7 @@ fi
 
 if [[ "$ARCH" != "aarch64" && "$ARCH" != "armv7l" ]]; then
     print_warn "Architecture is $ARCH — this is designed for ARM (Orange Pi / Raspberry Pi)."
-    read -r -p "Continue anyway? [y/N] " CONTINUE
+    read -r -p "Continue anyway? [y/N] " CONTINUE </dev/tty
     [[ "$CONTINUE" =~ ^[Yy]$ ]] || exit 1
 fi
 
@@ -91,9 +91,9 @@ echo -e "${YELLOW}You'll need an Unsplash Access Key and your iCalendar URL.${RE
 echo -e "Get an Unsplash key at: ${CYAN}https://unsplash.com/developers${RESET}"
 echo ""
 
-read -r -p "  Unsplash Access Key: " UNSPLASH_KEY
-read -r -p "  iCalendar URL:       " ICAL_URL
-read -r -p "  Image reload time in seconds [180]: " RELOAD_TIME
+read -r -p "  Unsplash Access Key: " UNSPLASH_KEY </dev/tty
+read -r -p "  iCalendar URL:       " ICAL_URL </dev/tty
+read -r -p "  Image reload time in seconds [180]: " RELOAD_TIME </dev/tty
 RELOAD_TIME=${RELOAD_TIME:-180}
 
 cat > "$INSTALL_DIR/.env" <<EOF
@@ -144,7 +144,7 @@ echo ""
 echo -e "  To uninstall later: ${CYAN}$INSTALL_DIR/uninstall.sh${RESET}"
 echo ""
 
-read -r -p "Reboot now? [y/N] " REBOOT
+read -r -p "Reboot now? [y/N] " REBOOT </dev/tty
 if [[ "$REBOOT" =~ ^[Yy]$ ]]; then
     sudo reboot
 fi
